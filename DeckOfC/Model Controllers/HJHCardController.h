@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shared;
 
 
--(void)drawNewCard:(NSInteger)numberOfCards completion:(void(^) (NSArray<HJHCard *> *cards, NSError *error))completion;
+-(void)drawNewCard:(void (^)(HJHCard *))completion;
 -(void)fetchCardImage:(HJHCard *)card completion:(void(^) (UIImage *image, NSError *error))completion;
 
 @end

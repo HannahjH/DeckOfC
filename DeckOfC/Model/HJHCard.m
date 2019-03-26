@@ -28,7 +28,7 @@
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary
 {
     NSString *suitFromDictionary = dictionary[@"suit"];
-    NSString *imageUrlFromDictionary = dictionary[@"imageUrl"];
+    NSString *imageUrlFromDictionary = dictionary[@"image"];
     
     if(![suitFromDictionary isKindOfClass:[NSString class]] || ![imageUrlFromDictionary isKindOfClass:[NSString class]]) {
         return nil;

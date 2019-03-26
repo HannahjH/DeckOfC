@@ -25,21 +25,17 @@
 }
 
 - (IBAction)newCardButtonTapped:(UIButton *)sender {
+    [self updateViews];
 }
 
 -(void)updateViews {
-    [[HJHCardController shared] drawNewCard:1 completion:^(NSArray<HJHCard *> * cards, NSError * error) {
-        if (error){
-            NSLog(@"Error getting photo references for %@ on %@:", cards, error);
-            return;
-        }
+    [[HJHCardController shared] drawNewCard:^(HJHCard *card) {
         
-        HJHCard *card = [cards objectAtIndex:0];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             self.cardSuitLabel.text = card.suit;
         });
-        [[HJHCardController shared] fetchCardImage:card completion:^(UIImage *image, NSError *error) {
+        [[HJHCardController shared] fetchCardImage: card  completion:^(UIImage *image, NSError *error) {
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.cardImageView.image = image;

@@ -21,43 +21,40 @@
     return shared;
 }
 
-+ (NSURL *)baseUrl
+-(void)drawNewCard:(void (^)(HJHCard *))completion
 {
-    return [NSURL URLWithString:@"https://deckofcardsapi.com/api/deck/new/draw/"];
-}
-
--(void)drawNewCard:(NSInteger)numberOfCards completion:(void (^)(NSArray<HJHCard *> * _Nonnull, NSError *))completion
-{
-    NSString *cardCount = [@(numberOfCards) stringValue];
-    NSURLComponents *components = [NSURLComponents componentsWithURL:[HJHCardController baseUrl] resolvingAgainstBaseURL:true];
+    
+    NSURL *baseUrl = [NSURL URLWithString:@"https://deckofcardsapi.com/api/deck/new/draw"];
+    NSString *cardCount = [@(1) stringValue];
+    NSURLComponents *components = [NSURLComponents componentsWithURL:baseUrl resolvingAgainstBaseURL:true];
     
     NSURLQueryItem *queryItem = [NSURLQueryItem queryItemWithName:@"count" value:cardCount];
     components.queryItems = @[queryItem];
     NSURL *searchUrl = components.URL;
     
+    NSLog(@"%@", [searchUrl absoluteString]);
+    
     [[[NSURLSession sharedSession] dataTaskWithURL:searchUrl completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {
             NSLog(@"There was an error in %s: %@, %@", __PRETTY_FUNCTION__, error, error.localizedDescription);
-            return completion(nil, [NSError errorWithDomain:@"error Fetching json" code:(NSInteger)-1 userInfo:nil]);
+            completion(nil);
+            return;
         }
         
         if (!data) {
             NSLog(@"Error: no data returned from task");
-            return completion(nil, [NSError errorWithDomain:@"error Fetching Data" code:(NSInteger)-1 userInfo:nil]);
+            completion(nil);
+            return;
         }
         // NSJSONSerialization takes info from the web and makes it presentable to a user on a mobile device.
         // info meaning data which are small binary bits. The result is that it will initialize JSON into our Object! Woo!
         NSDictionary *jsonDictionaries = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:(&error)];
         NSArray *cardsArray = jsonDictionaries[@"cards"];
-        NSMutableArray *cardsPlaceholder = [NSMutableArray array];
+        NSDictionary *cardDictionary = cardsArray[0];
         
-        
-        for (NSDictionary *cardDictionary in cardsArray){
-            
             HJHCard *card = [[HJHCard alloc] initWithDictionary:cardDictionary];
-            [cardsPlaceholder addObject:card];
-        }
-        completion(cardsPlaceholder, nil);
+        
+        completion(card);
     }] resume];
 }
 
